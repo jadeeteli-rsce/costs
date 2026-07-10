@@ -218,23 +218,57 @@ export default function RSCEDashboard() {
         justifyContent: "space-between",
         borderBottom: "3px solid #B98A3F",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div style={{
-            width: 42, height: 42, borderRadius: "50%",
-            background: "#B98A3F", display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0,
-          }}>
-            <PawPrint size={22} color="#1C2B45" />
-          </div>
-          <div>
-            <div style={{ fontFamily: "'Georgia', serif", fontSize: 20, letterSpacing: 0.3, lineHeight: 1.1 }}>
-              Real Sociedad Canina de España
-            </div>
-            <div style={{ fontSize: 12.5, opacity: 0.75, letterSpacing: 0.5 }}>
-              Panel de análisis de tarifas · 2018–2026
-            </div>
-          </div>
-        </div>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+  <div
+    style={{
+      width: 42,
+      height: 42,
+      borderRadius: "50%",
+      background: "#B98A3F",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+      marginTop: 2,
+    }}
+  >
+    <PawPrint size={22} color="#1C2B45" />
+  </div>
+
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+      justifyContent: "center",
+    }}
+  >
+    <div
+      style={{
+        fontFamily: "'Georgia', serif",
+        fontSize: 20,
+        fontWeight: 700,
+        lineHeight: 1.1,
+        marginBottom: 3,
+      }}
+    >
+      Real Sociedad Canina de España
+    </div>
+
+    <div
+      style={{
+        fontSize: 12.5,
+        opacity: 0.75,
+        marginLeft: 0,
+        paddingLeft: 0,
+        textAlign: "left",
+        alignSelf: "flex-start",
+      }}
+    >
+      Panel de análisis de tarifas · 2018–2026
+    </div>
+  </div>
+</div>
         <button
           onClick={handleExport}
           style={{
@@ -288,11 +322,22 @@ export default function RSCEDashboard() {
                 key={p}
                 onClick={() => setSelected(p)}
                 style={{
-                  padding: "9px 10px", borderRadius: 6, cursor: "pointer", fontSize: 13,
-                  marginBottom: 3, lineHeight: 1.3,
+                  padding: "9px 10px",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                  fontSize: 13,
+                  marginBottom: 3,
+                  lineHeight: 1.35,
                   background: p === selected ? "#1C2B45" : "transparent",
                   color: p === selected ? "#F6F3EC" : "#20242C",
-                }}
+
+                  textAlign: "left",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  whiteSpace: "normal",
+                  wordBreak: "break-word",
+}}
               >
                 {p}
               </div>
