@@ -403,7 +403,7 @@ export default function RSCEDashboard() {
                       onChange={(e) => setCpiRate(parseFloat(e.target.value) / 100 || 0)}
                       style={{
                         width: 70, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
-                        fontSize: 13, background: "#FFFBEA", fontFamily: "inherit",
+                        fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C",
                       }}
                     />
                     <span style={{ fontSize: 12.5, opacity: 0.7 }}>%</span>
@@ -444,7 +444,7 @@ export default function RSCEDashboard() {
                               placeholder="—"
                               style={{
                                 width: 90, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
-                                fontSize: 13, background: "#FFFBEA", fontFamily: "inherit",
+                                fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C",
                               }}
                             />
                           </td>
