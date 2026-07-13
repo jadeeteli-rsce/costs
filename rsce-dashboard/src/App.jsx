@@ -80,6 +80,52 @@ const RSCE_DATA = {"products": ["1ª CARTILLA", "1ª CARTILLA PERROS DE RASTRO D
 
   const [overrides, setOverrides] = useState({}); // key `${product}::${ct}` -> number
 
+  const [loading, setLoading] = useState(true);
+const [saveStatus, setSaveStatus] = useState("idle"); // 'idle' | 'saving' | 'saved' | 'error'
+const isFirstRun = useRef(true);
+
+useEffect(() => {
+  let cancelled = false;
+  (async () => {
+    const { data: row, error } = await supabase
+      .from("rsce_dataset").select("*").eq("id", 1).maybeSingle();
+
+    if (error) { console.error(error); setLoading(false); return; }
+
+    if (row) {
+      if (!cancelled) {
+        setProducts(row.products);
+        setCategories(row.categories);
+        setData(row.data);
+      }
+    } else {
+      // first run ever — seed Supabase from the bundled data
+      await supabase.from("rsce_dataset").insert({
+        id: 1, products: RSCE_DATA.products,
+        categories: RSCE_DATA.categories, data: RSCE_DATA.data,
+      });
+    }
+
+    const { data: overrideRows } = await supabase.from("rsce_overrides").select("*");
+    if (overrideRows && !cancelled) {
+      const ov = {};
+      overrideRows.forEach((r) => { ov[`${r.product}::${r.client_type}`] = r.value; });
+      setOverrides(ov);
+    }
+    if (!cancelled) setLoading(false);
+  })();
+  return () => { cancelled = true; };
+}, []);
+
+useEffect(() => {
+  if (isFirstRun.current) { isFirstRun.current = false; return; }
+  if (loading) return;
+  setSaveStatus("saving");
+  supabase.from("rsce_dataset")
+    .upsert({ id: 1, products, categories, data, updated_at: new Date().toISOString() })
+    .then(({ error }) => setSaveStatus(error ? "error" : "saved"));
+}, [products, categories, data, loading]);
+
   const [showAddProduct, setShowAddProduct] = useState(false);
 const [newProductName, setNewProductName] = useState("");
 const [newProductCategory, setNewProductCategory] = useState(categories[0] || "Sin categorizar");
@@ -164,14 +210,26 @@ const handleAddProduct = useCallback(() => {
   }, [selectedRecord, years, vatMode]);
 
   const setOverride = useCallback((ct, value) => {
-    const key = `${selected}::${ct}`;
-    setOverrides((prev) => {
-      const next = { ...prev };
-      if (value === "" || value === null) delete next[key];
-      else next[key] = parseFloat(value);
-      return next;
-    });
-  }, [selected]);
+  const key = `${selected}::${ct}`;
+  const numValue = value === "" || value === null ? null : parseFloat(value);
+
+  setOverrides((prev) => {
+    const next = { ...prev };
+    if (numValue === null || Number.isNaN(numValue)) delete next[key];
+    else next[key] = numValue;
+    return next;
+  });
+
+  setSaveStatus("saving");
+  const req = (numValue === null || Number.isNaN(numValue))
+    ? supabase.from("rsce_overrides").delete().eq("product", selected).eq("client_type", ct)
+    : supabase.from("rsce_overrides").upsert({
+        product: selected, client_type: ct, value: numValue,
+        updated_at: new Date().toISOString(),
+      });
+
+  req.then(({ error }) => setSaveStatus(error ? "error" : "saved"));
+}, [selected]);
 
   const overrideKey = (p, ct) => `${p}::${ct}`;
 
@@ -314,18 +372,24 @@ const handleAddProduct = useCallback(() => {
     </div>
   </div>
 </div>
-        <button
-          onClick={handleExport}
-          style={{
-            display: "flex", alignItems: "center", gap: 8,
-            background: "#B98A3F", color: "#1C2B45", border: "none",
-            padding: "10px 18px", borderRadius: 6, fontWeight: 600, fontSize: 14,
-            cursor: "pointer",
-          }}
-        >
-          <Download size={16} /> Exportar a Excel
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <button
+            onClick={handleExport}
+            style={{
+              display: "flex", alignItems: "center", gap: 8,
+              background: "#B98A3F", color: "#1C2B45", border: "none",
+              padding: "10px 18px", borderRadius: 6, fontWeight: 600, fontSize: 14,
+              cursor: "pointer",
+            }}
+          >
+            <Download size={16} /> Exportar a Excel
+          </button>
+          {saveStatus === "saving" && <Loader size={14} className="animate-spin" style={{ opacity: 0.7, color: "#F6F3EC" }} />}
+          {saveStatus === "saved" && <CheckCircle size={14} color="#5C7A5E" />}
+          {saveStatus === "error" && <span style={{ fontSize: 11, color: "#A6452E" }}>Error al guardar</span>}
+        </div>
       </div>
+
 
       <div style={{ display: "flex", maxWidth: 1400, margin: "0 auto" }}>
         {/* Sidebar */}
