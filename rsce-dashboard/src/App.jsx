@@ -75,6 +75,8 @@ export default function RSCEDashboard() {
   const [selected, setSelected] = useState(products[0]);
   const [vatMode, setVatMode] = useState("with_vat"); // 'with_vat' | 'no_vat'
   const [cpiRate, setCpiRate] = useState(0.02);
+  const [cpiDraft, setCpiDraft] = useState((0.02 * 100).toFixed(1)); // ← add this line
+
   const [overrides, setOverrides] = useState({}); // key `${product}::${ct}` -> number
 
   useEffect(() => {
