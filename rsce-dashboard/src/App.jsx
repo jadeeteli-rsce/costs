@@ -494,6 +494,11 @@ const handleAddProduct = useCallback(() => {
                             placeholder="ej. 2,0"
                             value={cpiDraft}
                             onChange={(e) => setCpiDraft(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.currentTarget.blur(); // triggers the existing onBlur commit logic
+                              }
+                            }}
                             onBlur={() => {
                               const val = parseFloat(cpiDraft.replace(",", "."));
                               if (!isNaN(val)) {
