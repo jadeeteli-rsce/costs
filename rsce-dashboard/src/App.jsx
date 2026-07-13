@@ -1,9 +1,14 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine,
 } from "recharts";
-import { Search, Download, Award, TrendingUp, TrendingDown, Minus, PawPrint, X } from "lucide-react";
+import { Search, Download, Award, TrendingUp, TrendingDown, Minus, PawPrint, Save, CheckCircle, Loader } from "lucide-react";
 import * as XLSX from "xlsx";
+
+import { createClient } from "@supabase/supabase-js";
+const SUPABASE_URL  = "https://kyexopavvsbyrdwtefca.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5ZXhvcGF2dnNieXJkd3RlZmNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5MTEzMDMsImV4cCI6MjA5OTQ4NzMwM30.NFVWMgeYSEOETDe_f8yH6TbULtxWuodFORgy8WImG_8";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const CT_LABELS = {
   Member: "Socios / Miembros",
