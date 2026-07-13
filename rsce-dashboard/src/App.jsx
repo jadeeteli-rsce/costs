@@ -448,14 +448,20 @@ export default function RSCEDashboard() {
                   <div style={{ fontSize: 13, fontWeight: 700, opacity: 0.75 }}>Previsión con IPC (año siguiente)</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <label style={{ fontSize: 12.5, opacity: 0.7 }}>IPC anual:</label>
-                    <input
-                      type="number" step="0.1" value={(cpiRate * 100).toFixed(1)}
-                      onChange={(e) => setCpiRate(parseFloat(e.target.value) / 100 || 0)}
-                      style={{
-                        width: 70, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
-                        fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C",
-                      }}
-                    />
+                         <input
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="ej. 2,0"
+                              defaultValue={(cpiRate * 100).toFixed(1)}
+                              onBlur={(e) => {
+                                const val = parseFloat(e.target.value.replace(",", "."));
+                                if (!isNaN(val)) setCpiRate(val / 100);
+                                else e.target.value = (cpiRate * 100).toFixed(1);
+                              }}
+                              style={{ width: 70, padding: "5px 8px", borderRadius: 6,
+                                border: "1px solid #D4CDBB", fontSize: 13,
+                                background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
+                            />
                     <span style={{ fontSize: 12.5, opacity: 0.7 }}>%</span>
                   </div>
                 </div>
