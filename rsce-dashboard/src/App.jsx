@@ -512,16 +512,8 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                   <h1 style={{ fontFamily: "'Georgia', serif", fontSize: 24, margin: "2px 0 0 0", lineHeight: 1.25 }}>
                     {selected}
                   </h1>
-                  <button
-                  onClick={handleAddYear}
-                  style={{
-                    padding: "6px 12px", borderRadius: 6, border: "1px dashed #B98A3F",
-                    fontSize: 12.5, fontWeight: 600, cursor: "pointer", background: "transparent",
-                    color: "#8C6B2E", marginRight: 8,
-                  }}
-                >
-                  + Añadir {Math.max(...years) + 1}
-                </button>
+                  
+                  
                 </div>
                 <div style={{ display: "flex", gap: 4, background: "#EFEAE0", borderRadius: 8, padding: 3 }}>
                   <button
@@ -599,17 +591,28 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, opacity: 0.75 }}>Editar precios</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <button
+                      onClick={handleAddYear}
+                      title="Crea el siguiente año en el histórico, disponible para todos los productos"
+                      style={{
+                        padding: "5px 10px", borderRadius: 6, border: "1px dashed #B98A3F",
+                        fontSize: 12, fontWeight: 600, cursor: "pointer", background: "transparent",
+                        color: "#8C6B2E",
+                      }}
+                    >
+                      + Crear año {Math.max(...years) + 1}
+                    </button>
                     <label style={{ fontSize: 12.5, opacity: 0.7 }}>Año:</label>
                     <select
                       value={editYear}
                       onChange={(e) => setEditYear(Number(e.target.value))}
                       style={{
                         padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
-                        fontSize: 13, fontFamily: "inherit", background: "white",
+                        fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C",
                       }}
                     >
                       {years.map((y) => (
-                        <option key={y} value={y}>
+                        <option key={y} value={y} style={{ color: "#20242C", background: "white" }}>
                           {y}{y === years[years.length - 1] ? " (más reciente)" : ""}
                         </option>
                       ))}
