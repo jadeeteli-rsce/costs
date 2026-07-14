@@ -40,6 +40,13 @@ function secondLastNonNull(series, field, beforeYear) {
   return null;
 }
 
+function prevYearEntry(series, beforeYear) {
+  for (let i = series.length - 1; i >= 0; i--) {
+    if (series[i].year < beforeYear) return series[i];
+  }
+  return null;
+}
+
 function valueForYear(series, field, year) {
   const entry = series.find((p) => p.year === year);
   if (!entry) return null;
@@ -596,7 +603,20 @@ const updatePrice = useCallback((product, ct, field, rawValue) => {
                   <tbody>
                     {CT_ORDER.map((ct) => {
                       const latestYear = years[years.length - 1];
-                      const entry = (selectedRecord.prices[ct] || []).find((p) => p.year === latestYear);
+                      const series = selectedRecord.prices[ct] || [];
+                      const entry = series.find((p) => p.year === latestYear);
+                      const prev = prevYearEntry(series, latestYear);
+
+                      const applyForecast = () => {
+                        if (!prev) return;
+                        if (prev.with_vat !== null && prev.with_vat !== undefined) {
+                          updatePrice(selected, ct, "with_vat", (Math.round(prev.with_vat * (1 + cpiRate) * 100) / 100).toString());
+                        }
+                        if (prev.no_vat !== null && prev.no_vat !== undefined) {
+                          updatePrice(selected, ct, "no_vat", (Math.round(prev.no_vat * (1 + cpiRate) * 100) / 100).toString());
+                        }
+                      };
+
                       return (
                         <tr key={ct} style={{ borderTop: "1px solid #F0EBDD" }}>
                           <td style={{ padding: "8px 0", fontWeight: 600 }}>
@@ -605,7 +625,7 @@ const updatePrice = useCallback((product, ct, field, rawValue) => {
                           </td>
                           <td>
                             <input
-                              key={`${selected}-${ct}-wv`}
+                              key={`${selected}-${ct}-wv-${entry?.with_vat ?? "empty"}`}
                               type="text" inputMode="decimal"
                               defaultValue={entry?.with_vat ?? ""}
                               placeholder="—"
@@ -616,7 +636,7 @@ const updatePrice = useCallback((product, ct, field, rawValue) => {
                           </td>
                           <td>
                             <input
-                              key={`${selected}-${ct}-nv`}
+                              key={`${selected}-${ct}-nv-${entry?.no_vat ?? "empty"}`}
                               type="text" inputMode="decimal"
                               defaultValue={entry?.no_vat ?? ""}
                               placeholder="—"
@@ -624,6 +644,20 @@ const updatePrice = useCallback((product, ct, field, rawValue) => {
                               style={{ width: 90, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
                                 fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
                             />
+                          </td>
+                          <td>
+                            <button
+                              onClick={applyForecast}
+                              disabled={!prev}
+                              title={prev ? `Usar ${fmtEUR(prev.with_vat)} × (1+IPC)` : "Sin año anterior para calcular"}
+                              style={{
+                                padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
+                                fontSize: 12, fontWeight: 600, cursor: prev ? "pointer" : "not-allowed",
+                                background: prev ? "#EFEAE0" : "#F5F2E9", color: prev ? "#1C2B45" : "#A8A08C",
+                              }}
+                            >
+                              Usar previsión IPC
+                            </button>
                           </td>
                         </tr>
                       );
@@ -678,10 +712,9 @@ const updatePrice = useCallback((product, ct, field, rawValue) => {
                   <thead>
                     <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
                       <th style={{ paddingBottom: 6 }}>Tipo</th>
-                      <th style={{ paddingBottom: 6 }}>Precio base</th>
-                      <th style={{ paddingBottom: 6 }}>Previsión IPC</th>
-                      <th style={{ paddingBottom: 6 }}>Anulación manual</th>
-                      <th style={{ paddingBottom: 6 }}>Precio final</th>
+                      <th style={{ paddingBottom: 6 }}>Con IVA</th>
+                      <th style={{ paddingBottom: 6 }}>Sin IVA</th>
+                      <th style={{ paddingBottom: 6 }}></th>
                     </tr>
                   </thead>
                   <tbody>
