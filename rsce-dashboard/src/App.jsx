@@ -131,6 +131,8 @@ useEffect(() => {
   return () => { cancelled = true; };
 }, []);
 
+
+
 useEffect(() => {
   if (isFirstRun.current) { isFirstRun.current = false; return; }
   if (loading) return;
@@ -140,6 +142,7 @@ useEffect(() => {
     .then(({ error }) => setSaveStatus(error ? "error" : "saved"));
 }, [products, categories, data, loading]);
 
+console.log("categoryFilter:", categoryFilter, "| sample category:", data[products[0]]?.category);
 
 const [editYear, setEditYear] = useState(RSCE_DATA.years[RSCE_DATA.years.length - 1]);
   const [showAddProduct, setShowAddProduct] = useState(false);
