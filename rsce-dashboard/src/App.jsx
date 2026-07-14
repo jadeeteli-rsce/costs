@@ -76,7 +76,7 @@ const RSCE_DATA = {"products": ["1ª CARTILLA", "1ª CARTILLA PERROS DE RASTRO D
   const [products, setProducts] = useState(() => [...RSCE_DATA.products]);
   const [categories, setCategories] = useState(() => [...RSCE_DATA.categories]);
   const [data, setData] = useState(() => JSON.parse(JSON.stringify(RSCE_DATA.data)));
-  const years = RSCE_DATA.years;
+  const [years, setYears] = useState(() => [...RSCE_DATA.years]);
 
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("Todas");
@@ -165,6 +165,30 @@ const handleAddProduct = useCallback(() => {
   setNewCategoryInput("");
   setAddingNewCategory(false);
 }, [newProductName, newProductCategory, newCategoryInput, addingNewCategory, data]);
+
+
+const handleAddYear = useCallback(() => {
+  setYears((prev) => {
+    const next = Math.max(...prev) + 1;
+    return prev.includes(next) ? prev : [...prev, next];
+  });
+}, []);
+
+const updatePrice = useCallback((product, ct, field, rawValue) => {
+  const latestYear = years[years.length - 1];
+  const val = rawValue === "" ? null : parseFloat(String(rawValue).replace(",", "."));
+  setData((prev) => {
+    const rec = prev[product];
+    if (!rec) return prev;
+    const series = rec.prices[ct] || [];
+    const idx = series.findIndex((p) => p.year === latestYear);
+    const newSeries = idx >= 0
+      ? series.map((p, i) => (i === idx ? { ...p, [field]: val } : p))
+      : [...series, { year: latestYear, with_vat: null, no_vat: null, [field]: val }]
+          .sort((a, b) => a.year - b.year);
+    return { ...prev, [product]: { ...rec, prices: { ...rec.prices, [ct]: newSeries } } };
+  });
+}, [years]);
 
   useEffect(() => {
   setCpiDraft((cpiRate * 100).toFixed(1));
@@ -474,6 +498,16 @@ const handleAddProduct = useCallback(() => {
                   <h1 style={{ fontFamily: "'Georgia', serif", fontSize: 24, margin: "2px 0 0 0", lineHeight: 1.25 }}>
                     {selected}
                   </h1>
+                  <button
+                  onClick={handleAddYear}
+                  style={{
+                    padding: "6px 12px", borderRadius: 6, border: "1px dashed #B98A3F",
+                    fontSize: 12.5, fontWeight: 600, cursor: "pointer", background: "transparent",
+                    color: "#8C6B2E", marginRight: 8,
+                  }}
+                >
+                  + Añadir {Math.max(...years) + 1}
+                </button>
                 </div>
                 <div style={{ display: "flex", gap: 4, background: "#EFEAE0", borderRadius: 8, padding: 3 }}>
                   <button
@@ -544,6 +578,58 @@ const handleAddProduct = useCallback(() => {
                     ))}
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+
+              {/* Editar precios del año más reciente */}
+              <div style={{ background: "white", borderRadius: 10, border: "1px solid #E5DFD1", padding: "18px 20px", marginBottom: 18 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, opacity: 0.75 }}>
+                  Editar precios {years[years.length - 1]}
+                </div>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
+                      <th style={{ paddingBottom: 6 }}>Tipo</th>
+                      <th style={{ paddingBottom: 6 }}>Con IVA</th>
+                      <th style={{ paddingBottom: 6 }}>Sin IVA</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {CT_ORDER.map((ct) => {
+                      const latestYear = years[years.length - 1];
+                      const entry = (selectedRecord.prices[ct] || []).find((p) => p.year === latestYear);
+                      return (
+                        <tr key={ct} style={{ borderTop: "1px solid #F0EBDD" }}>
+                          <td style={{ padding: "8px 0", fontWeight: 600 }}>
+                            <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: CT_COLORS[ct], marginRight: 7 }} />
+                            {CT_LABELS[ct]}
+                          </td>
+                          <td>
+                            <input
+                              key={`${selected}-${ct}-wv`}
+                              type="text" inputMode="decimal"
+                              defaultValue={entry?.with_vat ?? ""}
+                              placeholder="—"
+                              onBlur={(e) => updatePrice(selected, ct, "with_vat", e.target.value)}
+                              style={{ width: 90, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+                                fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              key={`${selected}-${ct}-nv`}
+                              type="text" inputMode="decimal"
+                              defaultValue={entry?.no_vat ?? ""}
+                              placeholder="—"
+                              onBlur={(e) => updatePrice(selected, ct, "no_vat", e.target.value)}
+                              style={{ width: 90, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+                                fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
 
               {/* Cross-type comparison + rosette badge */}
