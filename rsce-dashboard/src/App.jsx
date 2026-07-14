@@ -183,6 +183,27 @@ const handleAddYear = useCallback(() => {
   });
 }, []);
 
+const handleRemoveYear = useCallback((yearToRemove) => {
+  if (years.length <= 1) return;
+  const ok = window.confirm(
+    `¿Eliminar el año ${yearToRemove}? Esto borrará cualquier precio introducido para ese año en todos los productos.`
+  );
+  if (!ok) return;
+
+  setYears((prev) => prev.filter((y) => y !== yearToRemove));
+  setData((prev) => {
+    const next = {};
+    for (const [product, rec] of Object.entries(prev)) {
+      const newPrices = {};
+      for (const ct of CT_ORDER) {
+        newPrices[ct] = (rec.prices[ct] || []).filter((p) => p.year !== yearToRemove);
+      }
+      next[product] = { ...rec, prices: newPrices };
+    }
+    return next;
+  });
+}, [years]);
+
 const updatePrice = useCallback((product, ct, field, rawValue, year) => {
   const val = rawValue === "" ? null : parseFloat(String(rawValue).replace(",", "."));
   setData((prev) => {
@@ -617,6 +638,19 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                         </option>
                       ))}
                     </select>
+                    <button
+                      onClick={() => handleRemoveYear(editYear)}
+                      disabled={years.length <= 1}
+                      title="Elimina este año del histórico para todos los productos"
+                      style={{
+                        padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
+                        fontSize: 12, fontWeight: 600,
+                        cursor: years.length > 1 ? "pointer" : "not-allowed",
+                        background: "white", color: years.length > 1 ? "#A6452E" : "#C9C2B0",
+                      }}
+                    >
+                      Eliminar año
+                    </button>
                   </div>
                 </div>
 
@@ -673,7 +707,7 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                                 fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
                             />
                           </td>
-                          <td>
+                          <td style={{ display: "flex", gap: 6 }}>
                             <button
                               onClick={applyForecast}
                               disabled={!prev}
@@ -685,6 +719,21 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                               }}
                             >
                               Usar previsión IPC
+                            </button>
+                            <button
+                              onClick={() => {
+                                updatePrice(selected, ct, "with_vat", "", editYear);
+                                updatePrice(selected, ct, "no_vat", "", editYear);
+                              }}
+                              disabled={!entry}
+                              title="Borra el precio de este tipo para este año (vuelve a quedar sin datos)"
+                              style={{
+                                padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
+                                fontSize: 12, fontWeight: 600, cursor: entry ? "pointer" : "not-allowed",
+                                background: "white", color: entry ? "#A6452E" : "#C9C2B0",
+                              }}
+                            >
+                              Vaciar
                             </button>
                           </td>
                         </tr>
