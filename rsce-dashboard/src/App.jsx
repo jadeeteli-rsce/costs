@@ -140,6 +140,8 @@ useEffect(() => {
     .then(({ error }) => setSaveStatus(error ? "error" : "saved"));
 }, [products, categories, data, loading]);
 
+
+const [editYear, setEditYear] = useState(RSCE_DATA.years[RSCE_DATA.years.length - 1]);
   const [showAddProduct, setShowAddProduct] = useState(false);
 const [newProductName, setNewProductName] = useState("");
 const [newProductCategory, setNewProductCategory] = useState(categories[0] || "Sin categorizar");
@@ -181,25 +183,30 @@ const handleAddYear = useCallback(() => {
   });
 }, []);
 
-const updatePrice = useCallback((product, ct, field, rawValue) => {
-  const latestYear = years[years.length - 1];
+const updatePrice = useCallback((product, ct, field, rawValue, year) => {
   const val = rawValue === "" ? null : parseFloat(String(rawValue).replace(",", "."));
   setData((prev) => {
     const rec = prev[product];
     if (!rec) return prev;
     const series = rec.prices[ct] || [];
-    const idx = series.findIndex((p) => p.year === latestYear);
+    const idx = series.findIndex((p) => p.year === year);
     const newSeries = idx >= 0
       ? series.map((p, i) => (i === idx ? { ...p, [field]: val } : p))
-      : [...series, { year: latestYear, with_vat: null, no_vat: null, [field]: val }]
+      : [...series, { year, with_vat: null, no_vat: null, [field]: val }]
           .sort((a, b) => a.year - b.year);
     return { ...prev, [product]: { ...rec, prices: { ...rec.prices, [ct]: newSeries } } };
   });
-}, [years]);
+}, []);
 
   useEffect(() => {
   setCpiDraft((cpiRate * 100).toFixed(1));
 }, [cpiRate]);
+
+  useEffect(() => {
+  if (!years.includes(editYear)) {
+    setEditYear(years[years.length - 1]);
+  }
+}, [years, editYear]);
 
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
@@ -587,33 +594,51 @@ const updatePrice = useCallback((product, ct, field, rawValue) => {
                 </ResponsiveContainer>
               </div>
 
-              {/* Editar precios del año más reciente */}
+              {/* Editar precios (año seleccionable) */}
               <div style={{ background: "white", borderRadius: 10, border: "1px solid #E5DFD1", padding: "18px 20px", marginBottom: 18 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, opacity: 0.75 }}>
-                  Editar precios {years[years.length - 1]}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, opacity: 0.75 }}>Editar precios</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <label style={{ fontSize: 12.5, opacity: 0.7 }}>Año:</label>
+                    <select
+                      value={editYear}
+                      onChange={(e) => setEditYear(Number(e.target.value))}
+                      style={{
+                        padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+                        fontSize: 13, fontFamily: "inherit", background: "white",
+                      }}
+                    >
+                      {years.map((y) => (
+                        <option key={y} value={y}>
+                          {y}{y === years[years.length - 1] ? " (más reciente)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
+
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                   <thead>
                     <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
                       <th style={{ paddingBottom: 6 }}>Tipo</th>
                       <th style={{ paddingBottom: 6 }}>Con IVA</th>
                       <th style={{ paddingBottom: 6 }}>Sin IVA</th>
+                      <th style={{ paddingBottom: 6 }}></th>
                     </tr>
                   </thead>
                   <tbody>
                     {CT_ORDER.map((ct) => {
-                      const latestYear = years[years.length - 1];
                       const series = selectedRecord.prices[ct] || [];
-                      const entry = series.find((p) => p.year === latestYear);
-                      const prev = prevYearEntry(series, latestYear);
+                      const entry = series.find((p) => p.year === editYear);
+                      const prev = prevYearEntry(series, editYear);
 
                       const applyForecast = () => {
                         if (!prev) return;
                         if (prev.with_vat !== null && prev.with_vat !== undefined) {
-                          updatePrice(selected, ct, "with_vat", (Math.round(prev.with_vat * (1 + cpiRate) * 100) / 100).toString());
+                          updatePrice(selected, ct, "with_vat", (Math.round(prev.with_vat * (1 + cpiRate) * 100) / 100).toString(), editYear);
                         }
                         if (prev.no_vat !== null && prev.no_vat !== undefined) {
-                          updatePrice(selected, ct, "no_vat", (Math.round(prev.no_vat * (1 + cpiRate) * 100) / 100).toString());
+                          updatePrice(selected, ct, "no_vat", (Math.round(prev.no_vat * (1 + cpiRate) * 100) / 100).toString(), editYear);
                         }
                       };
 
@@ -625,22 +650,22 @@ const updatePrice = useCallback((product, ct, field, rawValue) => {
                           </td>
                           <td>
                             <input
-                              key={`${selected}-${ct}-wv-${entry?.with_vat ?? "empty"}`}
+                              key={`${selected}-${ct}-${editYear}-wv-${entry?.with_vat ?? "empty"}`}
                               type="text" inputMode="decimal"
                               defaultValue={entry?.with_vat ?? ""}
                               placeholder="—"
-                              onBlur={(e) => updatePrice(selected, ct, "with_vat", e.target.value)}
+                              onBlur={(e) => updatePrice(selected, ct, "with_vat", e.target.value, editYear)}
                               style={{ width: 90, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
                                 fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
                             />
                           </td>
                           <td>
                             <input
-                              key={`${selected}-${ct}-nv-${entry?.no_vat ?? "empty"}`}
+                              key={`${selected}-${ct}-${editYear}-nv-${entry?.no_vat ?? "empty"}`}
                               type="text" inputMode="decimal"
                               defaultValue={entry?.no_vat ?? ""}
                               placeholder="—"
-                              onBlur={(e) => updatePrice(selected, ct, "no_vat", e.target.value)}
+                              onBlur={(e) => updatePrice(selected, ct, "no_vat", e.target.value, editYear)}
                               style={{ width: 90, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
                                 fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
                             />
@@ -665,6 +690,7 @@ const updatePrice = useCallback((product, ct, field, rawValue) => {
                   </tbody>
                 </table>
               </div>
+             
 
               {/* Cross-type comparison + rosette badge */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 12, marginBottom: 18, alignItems: "stretch" }}>
