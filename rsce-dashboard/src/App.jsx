@@ -478,16 +478,21 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
             />
           </div>
           <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            style={{
-              width: "100%", padding: "7px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
-              fontSize: 13, marginBottom: 14, fontFamily: "inherit", background: "white",
-            }}
-          >
-            <option value="Todas">Todas las categorías</option>
-            {categories.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
+                  value={newProductCategory}
+                  onChange={(e) => {
+                    if (e.target.value === "__new__") setAddingNewCategory(true);
+                    else setNewProductCategory(e.target.value);
+                  }}
+                  style={{
+                    width: "100%", padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+                    fontSize: 12.5, marginBottom: 8, fontFamily: "inherit", background: "white", color: "#20242C",
+                  }}
+                >
+                  {categories.map((c) => (
+                    <option key={c} value={c} style={{ color: "#20242C", background: "white" }}>{c}</option>
+                  ))}
+                  <option value="__new__" style={{ color: "#20242C", background: "white" }}>+ Nueva categoría…</option>
+                </select>
 
           <div style={{ fontSize: 11.5, opacity: 0.6, marginBottom: 8, fontWeight: 600 }}>
             {filteredProducts.length} PRODUCTOS
