@@ -40,6 +40,13 @@ function secondLastNonNull(series, field, beforeYear) {
   return null;
 }
 
+function valueForYear(series, field, year) {
+  const entry = series.find((p) => p.year === year);
+  if (!entry) return null;
+  if (entry[field] === null || entry[field] === undefined) return null;
+  return entry;
+}
+
 function pctChange(a, b) {
   if (a === null || a === undefined || a === 0) return null;
   return (b - a) / a;
@@ -175,16 +182,17 @@ const handleAddProduct = useCallback(() => {
 
   const perTypeStats = useMemo(() => {
     if (!selectedRecord) return {};
+    const latestYear = years[years.length - 1];
     const out = {};
     for (const ct of CT_ORDER) {
       const series = selectedRecord.prices[ct] || [];
-      const last = lastNonNull(series, vatMode);
+      const last = valueForYear(series, vatMode, years[years.length - 1]);
       const prev = last ? secondLastNonNull(series, vatMode, last.year) : null;
       const yoy = last && prev ? pctChange(prev[vatMode], last[vatMode]) : null;
       out[ct] = { last, prev, yoy };
     }
     return out;
-  }, [selectedRecord, vatMode]);
+  }, [selectedRecord, vatMode, years]);
 
   const crossTypeVariation = useMemo(() => {
     const m = perTypeStats.Member?.last?.[vatMode] ?? null;
