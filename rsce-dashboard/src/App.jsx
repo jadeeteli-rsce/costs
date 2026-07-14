@@ -481,6 +481,47 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
             />
           </div>
           <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            style={{
+              width: "100%", padding: "7px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+              fontSize: 13, marginBottom: 10, fontFamily: "inherit", background: "white", color: "#20242C",
+            }}
+          >
+            <option value="Todas" style={{ color: "#20242C", background: "white" }}>Todas las categorías</option>
+            {categories.map((c) => (
+              <option key={c} value={c} style={{ color: "#20242C", background: "white" }}>{c}</option>
+            ))}
+          </select>
+
+          <button
+            onClick={() => setShowAddProduct((v) => !v)}
+            style={{
+              width: "100%", padding: "7px 8px", borderRadius: 6, border: "1px dashed #B98A3F",
+              fontSize: 12.5, fontWeight: 600, marginBottom: 14, cursor: "pointer",
+              background: "transparent", color: "#8C6B2E",
+            }}
+          >
+            {showAddProduct ? "Cancelar" : "+ Añadir producto"}
+          </button>
+
+          {showAddProduct && (
+            <div style={{
+              background: "#FFFBEA", border: "1px solid #E5DFD1", borderRadius: 8,
+              padding: 10, marginBottom: 14,
+            }}>
+              <input
+                value={newProductName}
+                onChange={(e) => setNewProductName(e.target.value)}
+                placeholder="Nombre del producto"
+                style={{
+                  width: "100%", padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+                  fontSize: 12.5, marginBottom: 8, fontFamily: "inherit", boxSizing: "border-box",
+                }}
+              />
+
+              {!addingNewCategory ? (
+                <select
                   value={newProductCategory}
                   onChange={(e) => {
                     if (e.target.value === "__new__") setAddingNewCategory(true);
@@ -496,6 +537,30 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                   ))}
                   <option value="__new__" style={{ color: "#20242C", background: "white" }}>+ Nueva categoría…</option>
                 </select>
+              ) : (
+                <input
+                  value={newCategoryInput}
+                  onChange={(e) => setNewCategoryInput(e.target.value)}
+                  placeholder="Nombre de la nueva categoría"
+                  style={{
+                    width: "100%", padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+                    fontSize: 12.5, marginBottom: 8, fontFamily: "inherit", boxSizing: "border-box",
+                  }}
+                />
+              )}
+
+              <button
+                onClick={handleAddProduct}
+                style={{
+                  width: "100%", padding: "7px 8px", borderRadius: 6, border: "none",
+                  background: "#B98A3F", color: "#1C2B45", fontWeight: 700, fontSize: 12.5,
+                  cursor: "pointer",
+                }}
+              >
+                Guardar producto
+              </button>
+            </div>
+          )}
 
           <div style={{ fontSize: 11.5, opacity: 0.6, marginBottom: 8, fontWeight: 600 }}>
             {filteredProducts.length} PRODUCTOS
