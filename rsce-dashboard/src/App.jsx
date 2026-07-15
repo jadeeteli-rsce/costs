@@ -692,8 +692,7 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
         <div style={{ flex: 1, padding: "24px 32px", minWidth: 0 }}>
           {selectedRecord && (
             <>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4, minHeight: 78 }}>
-                <div style={{ minWidth: 0, paddingRight: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4, height: 78, overflow: "hidden" }}>                <div style={{ minWidth: 0, paddingRight: 16 }}>
                   <div style={{
                     fontSize: 11, textTransform: "uppercase", letterSpacing: 0.8, color: "#B98A3F", fontWeight: 700,
                     whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
