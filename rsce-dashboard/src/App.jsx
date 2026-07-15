@@ -827,12 +827,18 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                   </div>
                 </div>
 
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, tableLayout: "fixed" }}>
+                  <colgroup>
+                    <col style={{ width: "26%" }} />
+                    <col style={{ width: "16%" }} />
+                    <col style={{ width: "16%" }} />
+                    <col style={{ width: "42%" }} />
+                  </colgroup>
                   <thead>
                     <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
-                      <th style={{ paddingBottom: 6 }}>Tipo</th>
-                      <th style={{ paddingBottom: 6 }}>Con IVA</th>
-                      <th style={{ paddingBottom: 6 }}>Sin IVA</th>
+                      <th style={{ paddingBottom: 6, paddingRight: 12 }}>Tipo</th>
+                      <th style={{ paddingBottom: 6, paddingRight: 12 }}>Con IVA</th>
+                      <th style={{ paddingBottom: 6, paddingRight: 12 }}>Sin IVA</th>
                       <th style={{ paddingBottom: 6 }}></th>
                     </tr>
                   </thead>
@@ -858,7 +864,7 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                             <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: CT_COLORS[ct], marginRight: 7 }} />
                             {CT_LABELS[ct]}
                           </td>
-                          <td>
+                          <td style={{ paddingRight: 12 }}>
                             <input
                               key={`${selected}-${ct}-${editYear}-wv-${entry?.with_vat ?? "empty"}`}
                               type="text" inputMode="decimal"
@@ -869,7 +875,7 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                                 fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
                             />
                           </td>
-                          <td>
+                          <td style={{ paddingRight: 12 }}>
                             <input
                               key={`${selected}-${ct}-${editYear}-nv-${entry?.no_vat ?? "empty"}`}
                               type="text" inputMode="decimal"
