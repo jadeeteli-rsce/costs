@@ -688,17 +688,26 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
           </div>
         </div>
 
-        {/* Main content */}
-       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-  <div>
-    <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 0.8, color: "#B98A3F", fontWeight: 700 }}>
-      {selectedRecord.category}
-    </div>
-    <h1 style={{ fontFamily: "'Georgia', serif", fontSize: 24, margin: "2px 0 0 0", lineHeight: 1.25 }}>
-      {selected}
-    </h1>
-  </div>
-  <div style={{ display: "flex", gap: 4, background: "#EFEAE0", borderRadius: 8, padding: 3 }}>
+       {/* Main content */}
+        <div style={{ flex: 1, padding: "24px 32px", minWidth: 0 }}>
+          {selectedRecord && (
+            <>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4, minHeight: 78 }}>
+                <div style={{ minWidth: 0, paddingRight: 16 }}>
+                  <div style={{
+                    fontSize: 11, textTransform: "uppercase", letterSpacing: 0.8, color: "#B98A3F", fontWeight: 700,
+                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                  }}>
+                    {selectedRecord.category}
+                  </div>
+                  <h1 style={{
+                    fontFamily: "'Georgia', serif", fontSize: 24, margin: "2px 0 0 0", lineHeight: 1.25,
+                    height: 60, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+                  }}>
+                    {selected}
+                  </h1>
+                </div>
+                <div style={{ display: "flex", gap: 4, background: "#EFEAE0", borderRadius: 8, padding: 3, flexShrink: 0 }}>
                   <button
                     onClick={() => setVatMode("with_vat")}
                     style={{
@@ -904,7 +913,6 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                   </tbody>
                 </table>
               </div>
-             
 
               {/* Cross-type comparison + rosette badge */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 12, marginBottom: 18, alignItems: "stretch" }}>
@@ -913,8 +921,6 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                 <ComparisonCard label="Colaboradora vs Usuario" value={crossTypeVariation.collabVsUser} />
                 <RosetteBadge value={crossTypeVariation.userVsMember} />
               </div>
-
-              
             </>
           )}
         </div>
@@ -923,6 +929,7 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
   );
 }
 
+     
 function ComparisonCard({ label, value }) {
   return (
     <div style={{
