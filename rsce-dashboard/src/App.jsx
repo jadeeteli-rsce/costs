@@ -701,13 +701,13 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                     {selectedRecord.category}
                   </div>
                   <h1 style={{
-                      fontFamily: "'Georgia', serif", fontSize: 24, margin: "2px 0 0 0", lineHeight: 1.25,
-                      color: "#20242C",
-                      height: 60, overflow: "hidden", display: "flex", alignItems: "center",
-                      whiteSpace: "normal", wordBreak: "break-word",
-                    }}>
-                      {selected}
-                    </h1>
+                    fontFamily: "'Georgia', serif", fontSize: 24, margin: "2px 0 0 0", lineHeight: 1.25,
+                    color: "#20242C",
+                    height: 60, overflow: "hidden", display: "flex", alignItems: "flex-start",
+                    whiteSpace: "normal", wordBreak: "break-word",
+                  }}>
+                    {selected}
+                  </h1>
                 </div>
                 <div style={{ display: "flex", gap: 4, background: "#EFEAE0", borderRadius: 8, padding: 3, flexShrink: 0 }}>
                   <button
