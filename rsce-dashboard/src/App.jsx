@@ -703,6 +703,7 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                     fontFamily: "'Georgia', serif", fontSize: 24, margin: "2px 0 0 0", lineHeight: 1.25,
                     color: "#20242C",
                     height: 60, overflow: "hidden", display: "flex", alignItems: "flex-start",
+                    display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical",
                     whiteSpace: "normal", wordBreak: "break-word",
                   }}>
                     {selected}
