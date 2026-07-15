@@ -207,6 +207,78 @@ const handleRemoveYear = useCallback((yearToRemove) => {
   });
 }, [years]);
 
+const fileInputRef = useRef(null);
+
+const normalizeName = (s) =>
+  s.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // strip accents
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+const handleImportExcel = useCallback((file) => {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const wb = XLSX.read(e.target.result, { type: "array" });
+    const sheetName = wb.SheetNames.includes("Data") ? "Data" : wb.SheetNames[0];
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: null });
+
+    // map normalized old product names -> category, so we keep categories where possible
+    const oldCategoryByName = {};
+    for (const p of products) {
+      oldCategoryByName[normalizeName(p)] = data[p]?.category || "Sin categorizar";
+    }
+
+    const newData = {};
+    const yearSet = new Set();
+
+    for (const row of rows) {
+      const year = Number(row.Year);
+      const product = String(row.Product || "").trim();
+      const ct = row.Customer_Type;
+      if (!product || !year || !CT_ORDER.includes(ct)) continue;
+
+      if (!newData[product]) {
+        const category = oldCategoryByName[normalizeName(product)] || "Sin categorizar";
+        newData[product] = { category, prices: { Member: [], User: [], Canine_Collaborator: [] } };
+      }
+      newData[product].prices[ct].push({
+        year,
+        with_vat: row.Price_with_VAT === null ? null : Number(row.Price_with_VAT),
+        no_vat: row.Price_no_VAT === null ? null : Number(row.Price_no_VAT),
+      });
+      yearSet.add(year);
+    }
+
+    // sort each product's series by year
+    for (const p of Object.keys(newData)) {
+      for (const ct of CT_ORDER) {
+        newData[p].prices[ct].sort((a, b) => a.year - b.year);
+      }
+    }
+
+    const newProducts = Object.keys(newData).sort((a, b) => a.localeCompare(b, "es"));
+    const newCategories = [...new Set(newProducts.map((p) => newData[p].category))].sort((a, b) =>
+      a.localeCompare(b, "es")
+    );
+    const newYears = [...yearSet].sort((a, b) => a - b);
+
+    const ok = window.confirm(
+      `Se importarán ${newProducts.length} productos (${newYears[0]}–${newYears[newYears.length - 1]}). ` +
+      `Esto SUSTITUYE todos los datos actuales del panel (y de Supabase). ¿Continuar?`
+    );
+    if (!ok) return;
+
+    setProducts(newProducts);
+    setCategories(newCategories);
+    setData(newData);
+    setYears(newYears);
+    setSelected(newProducts[0]);
+    setOverrides({}); // old overrides won't map cleanly onto merged product names
+    supabase.from("rsce_overrides").delete().neq("product", "__none__"); // clear stale overrides
+  };
+  reader.readAsArrayBuffer(file);
+}, [products, data]);
+
 const updatePrice = useCallback((product, ct, field, rawValue, year) => {
   const val = rawValue === "" ? null : parseFloat(String(rawValue).replace(",", "."));
   setData((prev) => {
@@ -503,6 +575,28 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
             }}
           >
             {showAddProduct ? "Cancelar" : "+ Añadir producto"}
+          </button>
+
+          <input
+            type="file"
+            accept=".xlsx"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleImportExcel(f);
+              e.target.value = ""; // allow re-selecting the same file later
+            }}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              width: "100%", padding: "7px 8px", borderRadius: 6, border: "1px dashed #1C2B45",
+              fontSize: 12.5, fontWeight: 600, marginBottom: 8, cursor: "pointer",
+              background: "transparent", color: "#1C2B45",
+            }}
+          >
+            ⤴ Importar Excel (hoja "Data")
           </button>
 
           {showAddProduct && (
