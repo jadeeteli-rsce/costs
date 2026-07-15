@@ -886,34 +886,38 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                                 fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
                             />
                           </td>
-                          <td style={{ display: "flex", gap: 6 }}>
-                            <button
-                              onClick={applyForecast}
-                              disabled={!prev}
-                              title={prev ? `Usar ${fmtEUR(prev.with_vat)} × (1+IPC)` : "Sin año anterior para calcular"}
-                              style={{
-                                padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
-                                fontSize: 12, fontWeight: 600, cursor: prev ? "pointer" : "not-allowed",
-                                background: prev ? "#EFEAE0" : "#F5F2E9", color: prev ? "#1C2B45" : "#A8A08C",
-                              }}
-                            >
-                              Usar previsión IPC
-                            </button>
-                            <button
-                              onClick={() => {
-                                updatePrice(selected, ct, "with_vat", "", editYear);
-                                updatePrice(selected, ct, "no_vat", "", editYear);
-                              }}
-                              disabled={!entry}
-                              title="Borra el precio de este tipo para este año (vuelve a quedar sin datos)"
-                              style={{
-                                padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
-                                fontSize: 12, fontWeight: 600, cursor: entry ? "pointer" : "not-allowed",
-                                background: "white", color: entry ? "#A6452E" : "#C9C2B0",
-                              }}
-                            >
-                              Vaciar
-                            </button>
+                          <td>
+                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                              <button
+                                onClick={applyForecast}
+                                disabled={!prev}
+                                title={prev ? `Usar ${fmtEUR(prev.with_vat)} × (1+IPC)` : "Sin año anterior para calcular"}
+                                style={{
+                                  padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
+                                  fontSize: 12, fontWeight: 600, cursor: prev ? "pointer" : "not-allowed",
+                                  background: prev ? "#EFEAE0" : "#F5F2E9", color: prev ? "#1C2B45" : "#A8A08C",
+                                  whiteSpace: "nowrap", flexShrink: 0,
+                                }}
+                              >
+                                Usar previsión IPC
+                              </button>
+                              <button
+                                onClick={() => {
+                                  updatePrice(selected, ct, "with_vat", "", editYear);
+                                  updatePrice(selected, ct, "no_vat", "", editYear);
+                                }}
+                                disabled={!entry}
+                                title="Borra el precio de este tipo para este año (vuelve a quedar sin datos)"
+                                style={{
+                                  padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
+                                  fontSize: 12, fontWeight: 600, cursor: entry ? "pointer" : "not-allowed",
+                                  background: "white", color: entry ? "#A6452E" : "#C9C2B0",
+                                  whiteSpace: "nowrap", flexShrink: 0,
+                                }}
+                              >
+                                Vaciar
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
