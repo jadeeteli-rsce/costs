@@ -876,7 +876,7 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                               fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C", }}
                             />
                           </td>
-                          <td style={{ paddingRight: 12 }}>
+                          <td style={{ paddingRight: 20 }}>
                             <input
                               key={`${selected}-${ct}-${editYear}-nv-${entry?.no_vat ?? "empty"}`}
                               type="text" inputMode="decimal"
@@ -887,7 +887,7 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                                 fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
                             />
                           </td>
-                          <td>
+                          <td style={{ paddingLeft: 20 }}>
                             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                               <button
                                 onClick={applyForecast}
