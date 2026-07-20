@@ -827,104 +827,103 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                   </div>
                 </div>
 
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, tableLayout: "fixed" }}>
-                  <colgroup>
-                    <col style={{ width: "30%" }} />
-                    <col style={{ width: "14%" }} />
-                    <col style={{ width: "14%" }} />
-                    <col style={{ width: "42%" }} />
-                  </colgroup>
-                  <thead>
-                    <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
-                      <th style={{ paddingBottom: 6, paddingRight: 12 }}>Tipo</th>
-                      <th style={{ paddingBottom: 6, paddingRight: 12 }}>Con IVA</th>
-                      <th style={{ paddingBottom: 6, paddingRight: 12 }}>Sin IVA</th>
-                      <th style={{ paddingBottom: 6 }}></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {CT_ORDER.map((ct) => {
-                      const series = selectedRecord.prices[ct] || [];
-                      const entry = series.find((p) => p.year === editYear);
-                      const prev = prevYearEntry(series, editYear);
+              <div>
+  <div style={{
+    display: "flex", fontSize: 11.5, textTransform: "uppercase",
+    opacity: 0.6, marginBottom: 6, gap: 12,
+  }}>
+    <div style={{ flex: "1 1 160px" }}>Tipo</div>
+    <div style={{ flex: "0 0 90px" }}>Con IVA</div>
+    <div style={{ flex: "0 0 90px" }}>Sin IVA</div>
+    <div style={{ flex: "1 1 200px" }}></div>
+  </div>
 
-                      const applyForecast = () => {
-                        if (!prev) return;
-                        if (prev.with_vat !== null && prev.with_vat !== undefined) {
-                          updatePrice(selected, ct, "with_vat", (Math.round(prev.with_vat * (1 + cpiRate) * 100) / 100).toString(), editYear);
-                        }
-                        if (prev.no_vat !== null && prev.no_vat !== undefined) {
-                          updatePrice(selected, ct, "no_vat", (Math.round(prev.no_vat * (1 + cpiRate) * 100) / 100).toString(), editYear);
-                        }
-                      };
+  {CT_ORDER.map((ct) => {
+    const series = selectedRecord.prices[ct] || [];
+    const entry = series.find((p) => p.year === editYear);
+    const prev = prevYearEntry(series, editYear);
 
-                      return (
-                        <tr key={ct} style={{ borderTop: "1px solid #F0EBDD" }}>
-                          <td style={{ padding: "8px 0", fontWeight: 600 }}>
-                            <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: CT_COLORS[ct], marginRight: 7 }} />
-                            {CT_LABELS[ct]}
-                          </td>
-                          <td style={{ paddingRight: 12 }}>
-                            <input
-                              key={`${selected}-${ct}-${editYear}-wv-${entry?.with_vat ?? "empty"}`}
-                              type="text" inputMode="decimal"
-                              defaultValue={entry?.with_vat ?? ""}
-                              placeholder="—"
-                              onBlur={(e) => updatePrice(selected, ct, "with_vat", e.target.value, editYear)}
-                              style={{width: "100%", maxWidth: 90, boxSizing: "border-box",
-                              padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
-                              fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C", }}
-                            />
-                          </td>
-                          <td style={{ paddingRight: 20 }}>
-                            <input
-                              key={`${selected}-${ct}-${editYear}-nv-${entry?.no_vat ?? "empty"}`}
-                              type="text" inputMode="decimal"
-                              defaultValue={entry?.no_vat ?? ""}
-                              placeholder="—"
-                              onBlur={(e) => updatePrice(selected, ct, "no_vat", e.target.value, editYear)}
-                              style={{ width: 90, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
-                                fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
-                            />
-                          </td>
-                          <td style={{ paddingLeft: 20 }}>
-                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                              <button
-                                onClick={applyForecast}
-                                disabled={!prev}
-                                title={prev ? `Usar ${fmtEUR(prev.with_vat)} × (1+IPC)` : "Sin año anterior para calcular"}
-                                style={{
-                                  padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
-                                  fontSize: 12, fontWeight: 600, cursor: prev ? "pointer" : "not-allowed",
-                                  background: prev ? "#EFEAE0" : "#F5F2E9", color: prev ? "#1C2B45" : "#A8A08C",
-                                  whiteSpace: "nowrap", flexShrink: 0,
-                                }}
-                              >
-                                Usar previsión IPC
-                              </button>
-                              <button
-                                onClick={() => {
-                                  updatePrice(selected, ct, "with_vat", "", editYear);
-                                  updatePrice(selected, ct, "no_vat", "", editYear);
-                                }}
-                                disabled={!entry}
-                                title="Borra el precio de este tipo para este año (vuelve a quedar sin datos)"
-                                style={{
-                                  padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
-                                  fontSize: 12, fontWeight: 600, cursor: entry ? "pointer" : "not-allowed",
-                                  background: "white", color: entry ? "#A6452E" : "#C9C2B0",
-                                  whiteSpace: "nowrap", flexShrink: 0,
-                                }}
-                              >
-                                Vaciar
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+    const applyForecast = () => {
+      if (!prev) return;
+      if (prev.with_vat !== null && prev.with_vat !== undefined) {
+        updatePrice(selected, ct, "with_vat", (Math.round(prev.with_vat * (1 + cpiRate) * 100) / 100).toString(), editYear);
+      }
+      if (prev.no_vat !== null && prev.no_vat !== undefined) {
+        updatePrice(selected, ct, "no_vat", (Math.round(prev.no_vat * (1 + cpiRate) * 100) / 100).toString(), editYear);
+      }
+    };
+
+    return (
+      <div key={ct} style={{
+        display: "flex", flexWrap: "wrap", alignItems: "center",
+        gap: 12, padding: "10px 0", borderTop: "1px solid #F0EBDD",
+      }}>
+        <div style={{ flex: "1 1 160px", fontWeight: 600, fontSize: 13 }}>
+          <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: CT_COLORS[ct], marginRight: 7 }} />
+          {CT_LABELS[ct]}
+        </div>
+
+        <input
+          key={`${selected}-${ct}-${editYear}-wv-${entry?.with_vat ?? "empty"}`}
+          type="text" inputMode="decimal"
+          defaultValue={entry?.with_vat ?? ""}
+          placeholder="—"
+          onBlur={(e) => updatePrice(selected, ct, "with_vat", e.target.value, editYear)}
+          style={{
+            flex: "0 0 90px", padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+            fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C",
+            boxSizing: "border-box",
+          }}
+        />
+
+        <input
+          key={`${selected}-${ct}-${editYear}-nv-${entry?.no_vat ?? "empty"}`}
+          type="text" inputMode="decimal"
+          defaultValue={entry?.no_vat ?? ""}
+          placeholder="—"
+          onBlur={(e) => updatePrice(selected, ct, "no_vat", e.target.value, editYear)}
+          style={{
+            flex: "0 0 90px", padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+            fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C",
+            boxSizing: "border-box",
+          }}
+        />
+
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", flex: "1 1 200px" }}>
+          <button
+            onClick={applyForecast}
+            disabled={!prev}
+            title={prev ? `Usar ${fmtEUR(prev.with_vat)} × (1+IPC)` : "Sin año anterior para calcular"}
+            style={{
+              padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
+              fontSize: 12, fontWeight: 600, cursor: prev ? "pointer" : "not-allowed",
+              background: prev ? "#EFEAE0" : "#F5F2E9", color: prev ? "#1C2B45" : "#A8A08C",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Usar previsión IPC
+          </button>
+          <button
+            onClick={() => {
+              updatePrice(selected, ct, "with_vat", "", editYear);
+              updatePrice(selected, ct, "no_vat", "", editYear);
+            }}
+            disabled={!entry}
+            title="Borra el precio de este tipo para este año (vuelve a quedar sin datos)"
+            style={{
+              padding: "5px 10px", borderRadius: 6, border: "1px solid #D4CDBB",
+              fontSize: 12, fontWeight: 600, cursor: entry ? "pointer" : "not-allowed",
+              background: "white", color: entry ? "#A6452E" : "#C9C2B0",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Vaciar
+          </button>
+        </div>
+      </div>
+    );
+  })}
+</div>
               </div>
 
               {/* Cross-type comparison + rosette badge */}
