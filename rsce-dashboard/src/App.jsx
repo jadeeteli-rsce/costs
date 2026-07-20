@@ -829,10 +829,10 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
 
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, tableLayout: "fixed" }}>
                   <colgroup>
-                    <col style={{ width: "22%" }} />
+                    <col style={{ width: "30%" }} />
                     <col style={{ width: "14%" }} />
                     <col style={{ width: "14%" }} />
-                    <col style={{ width: "50%" }} />
+                    <col style={{ width: "42%" }} />
                   </colgroup>
                   <thead>
                     <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
