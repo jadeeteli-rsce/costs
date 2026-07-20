@@ -829,10 +829,10 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
 
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, tableLayout: "fixed" }}>
                   <colgroup>
-                    <col style={{ width: "26%" }} />
-                    <col style={{ width: "16%" }} />
-                    <col style={{ width: "16%" }} />
-                    <col style={{ width: "42%" }} />
+                    <col style={{ width: "22%" }} />
+                    <col style={{ width: "14%" }} />
+                    <col style={{ width: "14%" }} />
+                    <col style={{ width: "50%" }} />
                   </colgroup>
                   <thead>
                     <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
@@ -871,8 +871,9 @@ const updatePrice = useCallback((product, ct, field, rawValue, year) => {
                               defaultValue={entry?.with_vat ?? ""}
                               placeholder="—"
                               onBlur={(e) => updatePrice(selected, ct, "with_vat", e.target.value, editYear)}
-                              style={{ width: 90, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
-                                fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C" }}
+                              style={{width: "100%", maxWidth: 90, boxSizing: "border-box",
+                              padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+                              fontSize: 13, background: "#FFFBEA", fontFamily: "inherit", color: "#20242C", }}
                             />
                           </td>
                           <td style={{ paddingRight: 12 }}>
