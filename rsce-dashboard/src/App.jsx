@@ -238,6 +238,16 @@ const [newProductCategory, setNewProductCategory] = useState(categories[0] || "S
 const [addingNewCategory, setAddingNewCategory] = useState(false);
 const [newCategoryInput, setNewCategoryInput] = useState("");
 
+const [compareYear, setCompareYear] = useState(years[years.length - 1]);
+const [compareTypeA, setCompareTypeA] = useState("Member");
+const [compareTypeB, setCompareTypeB] = useState("User");
+
+useEffect(() => {
+  if (!years.includes(compareYear)) {
+    setCompareYear(years[years.length - 1]);
+  }
+}, [years, compareYear]);
+
 const handleAddProduct = useCallback(() => {
   const name = newProductName.trim();
   if (!name) return;
@@ -427,6 +437,19 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
       collabVsUser: u && c ? pctChange(u, c) : null,
     };
   }, [perTypeStats, vatMode]);
+
+  const customComparison = useMemo(() => {
+  if (!selectedRecord) return null;
+  const seriesA = selectedRecord.prices[compareTypeA] || [];
+  const seriesB = selectedRecord.prices[compareTypeB] || [];
+  const entryA = valueForYear(seriesA, vatMode, compareYear);
+  const entryB = valueForYear(seriesB, vatMode, compareYear);
+  const valA = entryA ? entryA[vatMode] : null;
+  const valB = entryB ? entryB[vatMode] : null;
+  const diff = (valA !== null && valB !== null) ? valB - valA : null;
+  const pct = pctChange(valA, valB);
+  return { valA, valB, diff, pct };
+}, [selectedRecord, compareTypeA, compareTypeB, compareYear, vatMode]);
 
   const chartData = useMemo(() => {
     if (!selectedRecord) return [];
@@ -857,7 +880,7 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
                     <CartesianGrid strokeDasharray="3 3" stroke="#EEE8DA" />
                     <XAxis dataKey="year" tick={{ fontSize: 12 }} stroke="#8A8474" />
                     <YAxis tick={{ fontSize: 12 }} stroke="#8A8474" width={50} />
-                    <Tooltip formatter={(v) => fmtEUR(v)} labelStyle={{ fontWeight: 600 }} />
+                    <Tooltip formatter={(v, name) => [fmtEUR(v), CT_LABELS[name] || name]} labelStyle={{ fontWeight: 600 }} />                    
                     <Legend formatter={(v) => CT_LABELS[v]} wrapperStyle={{ fontSize: 12.5 }} />
                     {CT_ORDER.map((ct) => (
                       <Line
@@ -885,8 +908,31 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
                     >
                       + Crear año {Math.max(...years) + 1}
                     </button>
-                    <label style={{ fontSize: 12.5, opacity: 0.7 }}>Año:</label>
-                    <select
+                <label style={{ fontSize: 12.5, opacity: 0.7 }}>IPC:</label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={cpiDraft}
+                  onChange={(e) => setCpiDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") e.target.blur();
+                  }}
+                  onBlur={() => {
+                    const val = parseFloat(cpiDraft.replace(",", "."));
+                    if (!Number.isNaN(val) && val >= 0) {
+                      setCpiRate(val / 100);
+                    } else {
+                      setCpiDraft((cpiRate * 100).toFixed(1));
+                    }
+                  }}
+                  style={{
+                    width: 55, padding: "5px 8px", borderRadius: 6, border: "1px solid #D4CDBB",
+                    fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C",
+                    textAlign: "right",
+                  }}
+                />
+                      <span style={{ fontSize: 12.5, opacity: 0.7 }}>%</span>                    
+                      <select
                       value={editYear}
                       onChange={(e) => setEditYear(Number(e.target.value))}
                       style={{
@@ -1022,6 +1068,69 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
                 <ComparisonCard label="Colaboradora vs Socio" value={crossTypeVariation.collabVsMember} />
                 <ComparisonCard label="Colaboradora vs Usuario" value={crossTypeVariation.collabVsUser} />
                 <RosetteBadge value={crossTypeVariation.userVsMember} />
+                {/* Comparación personalizada */}
+<div style={{ background: "white", borderRadius: 10, border: "1px solid #E5DFD1", padding: "18px 20px", marginBottom: 18 }}>
+  <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12, opacity: 0.75 }}>
+    Comparación personalizada
+  </div>
+  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
+    <select
+      value={compareTypeA}
+      onChange={(e) => setCompareTypeA(e.target.value)}
+      style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
+    >
+      {CT_ORDER.map((ct) => (
+        <option key={ct} value={ct}>{CT_LABELS[ct]}</option>
+      ))}
+    </select>
+    <span style={{ fontSize: 13, opacity: 0.6 }}>vs</span>
+    <select
+      value={compareTypeB}
+      onChange={(e) => setCompareTypeB(e.target.value)}
+      style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
+    >
+      {CT_ORDER.map((ct) => (
+        <option key={ct} value={ct}>{CT_LABELS[ct]}</option>
+      ))}
+    </select>
+    <span style={{ fontSize: 13, opacity: 0.6 }}>en</span>
+    <select
+      value={compareYear}
+      onChange={(e) => setCompareYear(Number(e.target.value))}
+      style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
+    >
+      {years.map((y) => (
+        <option key={y} value={y}>{y}</option>
+      ))}
+    </select>
+  </div>
+
+  {customComparison && (
+    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+      <thead>
+        <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
+          <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeA]}</th>
+          <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeB]}</th>
+          <th style={{ paddingBottom: 6 }}>Diferencia (€)</th>
+          <th style={{ paddingBottom: 6 }}>Variación (%)</th>
+        </tr>
+      </thead>
+                      <tbody>
+                        <tr style={{ borderTop: "1px solid #F0EBDD" }}>
+                          <td style={{ padding: "8px 0", fontWeight: 600 }}>{fmtEUR(customComparison.valA)}</td>
+                          <td style={{ padding: "8px 0", fontWeight: 600 }}>{fmtEUR(customComparison.valB)}</td>
+                          <td style={{ padding: "8px 0" }}>
+                            {customComparison.diff !== null ? fmtEUR(customComparison.diff) : "—"}
+                          </td>
+                          <td style={{ padding: "8px 0", display: "flex", alignItems: "center", gap: 5 }}>
+                            <TrendIcon v={customComparison.pct} />
+                            {fmtPct(customComparison.pct)}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               </div>
             </>
           )}
@@ -1030,6 +1139,7 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
     </div>
   );
 }
+
 
      
 function ComparisonCard({ label, value }) {
