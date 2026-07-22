@@ -654,7 +654,7 @@ useEffect(() => {
               cursor: "pointer",
             }}
           >
-            <Download size={16} /> Exportar a Excel
+            <Download size={16} /> Exportar todo
           </button>
           {saveStatus === "saving" && <Loader size={14} className="animate-spin" style={{ opacity: 0.7, color: "#F6F3EC" }} />}
           {saveStatus === "saved" && <CheckCircle size={14} color="#5C7A5E" />}
@@ -1292,7 +1292,7 @@ function TarifaWebTab({ products, categories, data, years, year, setYear }) {
                 cursor: "pointer",
               }}
             >
-              <Download size={15} /> Exportar a Excel
+              <Download size={15} /> Exportar esta vista
             </button>
           </div>
         </div>
@@ -1321,9 +1321,9 @@ function TarifaWebTab({ products, categories, data, years, year, setYear }) {
                 <tbody>
                   {rowsByCategory[cat].map((r) => (
                     <tr key={r.product} style={{ borderTop: "1px solid #F5F1E6" }}>
-                    <td style={{ padding: "6px 0", paddingRight: 12, textAlign: "left" }}>{r.product}</td>       
-                    <td style={{ padding: "6px 0", fontWeight: 600, textAlign: "left" }}>{r.member !== null ? fmtEUR(r.member) : "—"}</td>
-                    <td style={{ padding: "6px 0", fontWeight: 600, textAlign: "left" }}>{r.user !== null ? fmtEUR(r.user) : "—"}</td>
+                      <td style={{ padding: "6px 0", paddingRight: 12, textAlign: "left" }}>{r.product}</td>
+                      <td style={{ padding: "6px 0", fontWeight: 600, textAlign: "left" }}>{r.member !== null ? fmtEUR(r.member) : "—"}</td>
+                      <td style={{ padding: "6px 0", fontWeight: 600, textAlign: "left" }}>{r.user !== null ? fmtEUR(r.user) : "—"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1402,7 +1402,7 @@ function ColaboradorasTab({ products, categories, data, years, year, setYear, pr
                 cursor: "pointer",
               }}
             >
-              <Download size={15} /> Exportar a Excel
+              <Download size={15} /> Exportar esta vista
             </button>
           </div>
         </div>
@@ -1431,9 +1431,9 @@ function ColaboradorasTab({ products, categories, data, years, year, setYear, pr
                 <tbody>
                   {rowsByCategory[cat].map((r) => (
                     <tr key={r.product} style={{ borderTop: "1px solid #F5F1E6" }}>
-                     <td style={{ padding: "6px 0", paddingRight: 12, textAlign: "left" }}>{r.product}</td>
-    º                <td style={{ padding: "6px 0", opacity: 0.75, textAlign: "left" }}>{r.code}</td>
-                    <td style={{ padding: "6px 0", fontWeight: 600, textAlign: "left" }}>{fmtEUR(r.price)}</td> 
+                      <td style={{ padding: "6px 0", paddingRight: 12, textAlign: "left" }}>{r.product}</td>
+                      <td style={{ padding: "6px 0", opacity: 0.75, textAlign: "left" }}>{r.code}</td>
+                      <td style={{ padding: "6px 0", fontWeight: 600, textAlign: "left" }}>{fmtEUR(r.price)}</td>
                     </tr>
                   ))}
                 </tbody>
