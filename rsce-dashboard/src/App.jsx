@@ -1063,74 +1063,76 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
               </div>
 
               {/* Cross-type comparison + rosette badge */}
+              {/* Cross-type comparison + rosette badge */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 12, marginBottom: 18, alignItems: "stretch" }}>
                 <ComparisonCard label="Usuario vs Socio" value={crossTypeVariation.userVsMember} />
                 <ComparisonCard label="Colaboradora vs Socio" value={crossTypeVariation.collabVsMember} />
                 <ComparisonCard label="Colaboradora vs Usuario" value={crossTypeVariation.collabVsUser} />
                 <RosetteBadge value={crossTypeVariation.userVsMember} />
-                {/* Comparación personalizada */}
-<div style={{ background: "white", borderRadius: 10, border: "1px solid #E5DFD1", padding: "18px 20px", marginBottom: 18 }}>
-  <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12, opacity: 0.75 }}>
-    Comparación personalizada
-  </div>
-  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
-    <select
-      value={compareTypeA}
-      onChange={(e) => setCompareTypeA(e.target.value)}
-      style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
-    >
-      {CT_ORDER.map((ct) => (
-        <option key={ct} value={ct}>{CT_LABELS[ct]}</option>
-      ))}
-    </select>
-    <span style={{ fontSize: 13, opacity: 0.6 }}>vs</span>
-    <select
-      value={compareTypeB}
-      onChange={(e) => setCompareTypeB(e.target.value)}
-      style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
-    >
-      {CT_ORDER.map((ct) => (
-        <option key={ct} value={ct}>{CT_LABELS[ct]}</option>
-      ))}
-    </select>
-    <span style={{ fontSize: 13, opacity: 0.6 }}>en</span>
-    <select
-      value={compareYear}
-      onChange={(e) => setCompareYear(Number(e.target.value))}
-      style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
-    >
-      {years.map((y) => (
-        <option key={y} value={y}>{y}</option>
-      ))}
-    </select>
-  </div>
+              </div>
 
-  {customComparison && (
-    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-      <thead>
-        <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
-          <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeA]}</th>
-          <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeB]}</th>
-          <th style={{ paddingBottom: 6 }}>Diferencia (€)</th>
-          <th style={{ paddingBottom: 6 }}>Variación (%)</th>
-        </tr>
-      </thead>
-                      <tbody>
-                        <tr style={{ borderTop: "1px solid #F0EBDD" }}>
-                          <td style={{ padding: "8px 0", fontWeight: 600 }}>{fmtEUR(customComparison.valA)}</td>
-                          <td style={{ padding: "8px 0", fontWeight: 600 }}>{fmtEUR(customComparison.valB)}</td>
-                          <td style={{ padding: "8px 0" }}>
-                            {customComparison.diff !== null ? fmtEUR(customComparison.diff) : "—"}
-                          </td>
-                          <td style={{ padding: "8px 0", display: "flex", alignItems: "center", gap: 5 }}>
-                            <TrendIcon v={customComparison.pct} />
-                            {fmtPct(customComparison.pct)}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  )}
+              {/* Comparación personalizada (full-width, matches Editar precios styling) */}
+              <div style={{ background: "white", borderRadius: 10, border: "1px solid #E5DFD1", padding: "18px 20px", marginBottom: 18 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap", gap: 10 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, opacity: 0.75 }}>Comparación personalizada</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <select
+                      value={compareTypeA}
+                      onChange={(e) => setCompareTypeA(e.target.value)}
+                      style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
+                    >
+                      {CT_ORDER.map((ct) => (
+                        <option key={ct} value={ct} style={{ color: "#20242C", background: "white" }}>{CT_LABELS[ct]}</option>
+                      ))}
+                    </select>
+                    <span style={{ fontSize: 13, opacity: 0.6 }}>vs</span>
+                    <select
+                      value={compareTypeB}
+                      onChange={(e) => setCompareTypeB(e.target.value)}
+                      style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
+                    >
+                      {CT_ORDER.map((ct) => (
+                        <option key={ct} value={ct} style={{ color: "#20242C", background: "white" }}>{CT_LABELS[ct]}</option>
+                      ))}
+                    </select>
+                    <span style={{ fontSize: 13, opacity: 0.6 }}>en</span>
+                    <select
+                      value={compareYear}
+                      onChange={(e) => setCompareYear(Number(e.target.value))}
+                      style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
+                    >
+                      {years.map((y) => (
+                        <option key={y} value={y} style={{ color: "#20242C", background: "white" }}>{y}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
+
+                {customComparison && (
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                    <thead>
+                      <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
+                        <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeA]}</th>
+                        <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeB]}</th>
+                        <th style={{ paddingBottom: 6 }}>Diferencia (€)</th>
+                        <th style={{ paddingBottom: 6 }}>Variación (%)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ borderTop: "1px solid #F0EBDD" }}>
+                        <td style={{ padding: "8px 0", fontWeight: 600 }}>{fmtEUR(customComparison.valA)}</td>
+                        <td style={{ padding: "8px 0", fontWeight: 600 }}>{fmtEUR(customComparison.valB)}</td>
+                        <td style={{ padding: "8px 0" }}>
+                          {customComparison.diff !== null ? fmtEUR(customComparison.diff) : "—"}
+                        </td>
+                        <td style={{ padding: "8px 0", display: "flex", alignItems: "center", gap: 5 }}>
+                          <TrendIcon v={customComparison.pct} />
+                          {fmtPct(customComparison.pct)}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                )}
               </div>
             </>
           )}
