@@ -238,15 +238,15 @@ const [newProductCategory, setNewProductCategory] = useState(categories[0] || "S
 const [addingNewCategory, setAddingNewCategory] = useState(false);
 const [newCategoryInput, setNewCategoryInput] = useState("");
 
-const [compareYear, setCompareYear] = useState(years[years.length - 1]);
 const [compareTypeA, setCompareTypeA] = useState("Member");
-const [compareTypeB, setCompareTypeB] = useState("User");
+const [compareYearA, setCompareYearA] = useState(years[years.length - 2] ?? years[years.length - 1]);
+const [compareTypeB, setCompareTypeB] = useState("Member");
+const [compareYearB, setCompareYearB] = useState(years[years.length - 1]);
 
 useEffect(() => {
-  if (!years.includes(compareYear)) {
-    setCompareYear(years[years.length - 1]);
-  }
-}, [years, compareYear]);
+  if (!years.includes(compareYearA)) setCompareYearA(years[years.length - 1]);
+  if (!years.includes(compareYearB)) setCompareYearB(years[years.length - 1]);
+}, [years, compareYearA, compareYearB]);
 
 const handleAddProduct = useCallback(() => {
   const name = newProductName.trim();
@@ -442,14 +442,14 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
   if (!selectedRecord) return null;
   const seriesA = selectedRecord.prices[compareTypeA] || [];
   const seriesB = selectedRecord.prices[compareTypeB] || [];
-  const entryA = valueForYear(seriesA, vatMode, compareYear);
-  const entryB = valueForYear(seriesB, vatMode, compareYear);
+  const entryA = valueForYear(seriesA, vatMode, compareYearA);
+  const entryB = valueForYear(seriesB, vatMode, compareYearB);
   const valA = entryA ? entryA[vatMode] : null;
   const valB = entryB ? entryB[vatMode] : null;
   const diff = (valA !== null && valB !== null) ? valB - valA : null;
   const pct = pctChange(valA, valB);
   return { valA, valB, diff, pct };
-}, [selectedRecord, compareTypeA, compareTypeB, compareYear, vatMode]);
+}, [selectedRecord, compareTypeA, compareYearA, compareTypeB, compareYearB, vatMode]);
 
   const chartData = useMemo(() => {
     if (!selectedRecord) return [];
@@ -1072,10 +1072,14 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
               </div>
 
               {/* Comparación personalizada (full-width, matches Editar precios styling) */}
+              {/* Comparación personalizada (full-width, matches Editar precios styling) */}
               <div style={{ background: "white", borderRadius: 10, border: "1px solid #E5DFD1", padding: "18px 20px", marginBottom: 18 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap", gap: 10 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, opacity: 0.75 }}>Comparación personalizada</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 14, opacity: 0.75 }}>
+                  Comparación personalizada
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#FBFAF6", border: "1px solid #EEE8DA", borderRadius: 8, padding: "6px 10px" }}>
                     <select
                       value={compareTypeA}
                       onChange={(e) => setCompareTypeA(e.target.value)}
@@ -1085,7 +1089,20 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
                         <option key={ct} value={ct} style={{ color: "#20242C", background: "white" }}>{CT_LABELS[ct]}</option>
                       ))}
                     </select>
-                    <span style={{ fontSize: 13, opacity: 0.6 }}>vs</span>
+                    <select
+                      value={compareYearA}
+                      onChange={(e) => setCompareYearA(Number(e.target.value))}
+                      style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
+                    >
+                      {years.map((y) => (
+                        <option key={y} value={y} style={{ color: "#20242C", background: "white" }}>{y}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <span style={{ fontSize: 13, opacity: 0.6, fontWeight: 600 }}>vs</span>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#FBFAF6", border: "1px solid #EEE8DA", borderRadius: 8, padding: "6px 10px" }}>
                     <select
                       value={compareTypeB}
                       onChange={(e) => setCompareTypeB(e.target.value)}
@@ -1095,10 +1112,9 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
                         <option key={ct} value={ct} style={{ color: "#20242C", background: "white" }}>{CT_LABELS[ct]}</option>
                       ))}
                     </select>
-                    <span style={{ fontSize: 13, opacity: 0.6 }}>en</span>
                     <select
-                      value={compareYear}
-                      onChange={(e) => setCompareYear(Number(e.target.value))}
+                      value={compareYearB}
+                      onChange={(e) => setCompareYearB(Number(e.target.value))}
                       style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid #D4CDBB", fontSize: 13, fontFamily: "inherit", background: "white", color: "#20242C" }}
                     >
                       {years.map((y) => (
@@ -1112,8 +1128,8 @@ const codeToProduct = useMemo(() => buildCodeToProduct(products), [products]);
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                     <thead>
                       <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
-                        <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeA]}</th>
-                        <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeB]}</th>
+                        <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeA]} ({compareYearA})</th>
+                        <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeB]} ({compareYearB})</th>
                         <th style={{ paddingBottom: 6 }}>Diferencia (€)</th>
                         <th style={{ paddingBottom: 6 }}>Variación (%)</th>
                       </tr>
