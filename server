@@ -1,0 +1,17 @@
+cat > inspect_tables.py << 'EOF'
+import pandas as pd
+import glob
+
+files = glob.glob("data/*.xlsx") + glob.glob("data/**/*.xlsx", recursive=True)
+files = sorted(set(files))
+
+for path in files:
+    print(f"\n{'='*80}\n{path}\n{'='*80}")
+    xls = pd.ExcelFile(path)
+    for sheet in xls.sheet_names:
+        df = pd.read_excel(path, sheet_name=sheet, header=None)
+        print(f"\n--- Sheet: {sheet} ({df.shape[0]} rows x {df.shape[1]} cols) ---")
+        with pd.option_context("display.max_rows", 200, "display.max_colwidth", 60):
+            print(df)
+EOF
+python3 inspect_tables.py > output.txt
