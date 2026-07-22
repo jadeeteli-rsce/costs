@@ -1012,10 +1012,10 @@ useEffect(() => {
                   </colgroup>
                   <thead>
                     <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
-                      <th style={{ paddingBottom: 6, paddingRight: 12 }}>Tipo</th>
-                      <th style={{ paddingBottom: 6, paddingRight: 12 }}>Con IVA</th>
-                      <th style={{ paddingBottom: 6, paddingRight: 12 }}>Sin IVA</th>
-                      <th style={{ paddingBottom: 6 }}></th>
+                      <th style={{ paddingBottom: 6, paddingRight: 12, textAlign: "left" }}>Tipo</th>
+                      <th style={{ paddingBottom: 6, paddingRight: 12, textAlign: "left" }}>Con IVA</th>
+                      <th style={{ paddingBottom: 6, paddingRight: 12, textAlign: "left" }}>Sin IVA</th>
+                      <th style={{ paddingBottom: 6, textAlign: "left" }}></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1167,10 +1167,10 @@ useEffect(() => {
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                     <thead>
                       <tr style={{ textAlign: "left", opacity: 0.6, fontSize: 11.5, textTransform: "uppercase" }}>
-                        <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeA]} ({compareYearA})</th>
-                        <th style={{ paddingBottom: 6 }}>{CT_LABELS[compareTypeB]} ({compareYearB})</th>
-                        <th style={{ paddingBottom: 6 }}>Diferencia (€)</th>
-                        <th style={{ paddingBottom: 6 }}>Variación (%)</th>
+                        <th style={{ paddingBottom: 6, textAlign: "left" }}>{CT_LABELS[compareTypeA]} ({compareYearA})</th>
+                        <th style={{ paddingBottom: 6, textAlign: "left" }}>{CT_LABELS[compareTypeB]} ({compareYearB})</th>
+                        <th style={{ paddingBottom: 6, textAlign: "left" }}>Diferencia (€)</th>
+                        <th style={{ paddingBottom: 6, textAlign: "left" }}>Variación (%)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1311,9 +1311,9 @@ function TarifaWebTab({ products, categories, data, years, year, setYear }) {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr style={{ textAlign: "left", opacity: 0.55, fontSize: 11, textTransform: "uppercase" }}>
-                    <th style={{ padding: "4px 0", width: "60%" }}>Concepto</th>
-                    <th style={{ padding: "4px 0" }}>Socios RSCE</th>
-                    <th style={{ padding: "4px 0" }}>Resto de Usuarios</th>
+                    <th style={{ padding: "4px 0", width: "60%", textAlign: "left" }}>Concepto</th>
+                    <th style={{ padding: "4px 0", textAlign: "left" }}>Socios RSCE</th>
+                    <th style={{ padding: "4px 0", textAlign: "left" }}>Resto de Usuarios</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1421,9 +1421,9 @@ function ColaboradorasTab({ products, categories, data, years, year, setYear, pr
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr style={{ textAlign: "left", opacity: 0.55, fontSize: 11, textTransform: "uppercase" }}>
-                    <th style={{ padding: "4px 0", width: "60%" }}>Concepto</th>
-                    <th style={{ padding: "4px 0" }}>Código</th>
-                    <th style={{ padding: "4px 0" }}>Precio</th>
+                    <th style={{ padding: "4px 0", width: "60%", textAlign: "left" }}>Concepto</th>
+                    <th style={{ padding: "4px 0", textAlign: "left" }}>Código</th>
+                    <th style={{ padding: "4px 0", textAlign: "left" }}>Precio</th>
                   </tr>
                 </thead>
                 <tbody>
